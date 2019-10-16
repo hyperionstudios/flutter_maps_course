@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>12607623492-o4inbsnuijppcte4gv5osd3o820mm1ok.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.12607623492-o4inbsnuijppcte4gv5osd3o820mm1ok</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDnbNUoCC1IgcixRfpcNHbN7Mu-9l5IHFU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>12607623492</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>hyperionstudios.com.au.flutterMapsCourse</string>
+	<key>PROJECT_ID</key>
+	<string>flutter-maps-2d80b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>flutter-maps-2d80b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:12607623492:ios:d0cd6a3cdf1398861b8711</string>
+	<key>DATABASE_URL</key>
+	<string>https://flutter-maps-2d80b.firebaseio.com</string>
+</dict>
+</plist>

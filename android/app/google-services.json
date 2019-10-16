@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "12607623492",
+    "firebase_url": "https://flutter-maps-2d80b.firebaseio.com",
+    "project_id": "flutter-maps-2d80b",
+    "storage_bucket": "flutter-maps-2d80b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12607623492:android:f14b0bd32c9651c01b8711",
+        "android_client_info": {
+          "package_name": "hyperionstudios.com.au.flutter_maps_course"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12607623492-ft1tjo8vbstgliojepm9aofl5n4o0edl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6ca0Mb4ys7fMbLI-2EIIbM6eeplyuh_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12607623492-ft1tjo8vbstgliojepm9aofl5n4o0edl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "12607623492-o4inbsnuijppcte4gv5osd3o820mm1ok.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "hyperionstudios.com.au.flutterMapsCourse"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
