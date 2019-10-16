@@ -41,6 +41,8 @@ class _RealTimeScreenState extends State<RealTimeScreen> {
   CameraPosition cameraPosition;
   bool loaded = false;
 
+  List<User> users = [];
+
   @override
   void initState() {
     super.initState();
@@ -52,16 +54,36 @@ class _RealTimeScreenState extends State<RealTimeScreen> {
         .listen((event) {
       for (var user in event.snapshot.value) {
         if (user != null) {
+          users.add(User(user['id']));
           markers.add(Marker(
-              markerId: MarkerId(user['id']),
-              position: LatLng(user['location']['latitude'],
-                  user['location']['longitude'])));
+            markerId: MarkerId(user['id']),
+            position: LatLng(
+              user['location']['latitude'],
+              user['location']['longitude'],
+            ),
+            infoWindow: InfoWindow(
+              title: user['id']
+            )
+          ));
         }
       }
       cameraPosition = CameraPosition(target: markers[0].position, zoom: 15);
       setState(() {
         loaded = true;
       });
+      for (Marker marker in markers) {
+        Geolocator()
+            .distanceBetween(
+                marker.position.latitude,
+                marker.position.longitude,
+                markers[0].position.latitude,
+                markers[0].position.longitude)
+            .then((distance) {
+          if (distance > 5) {
+            _showWarning(marker.infoWindow.title);
+          }
+        });
+      }
     });
   }
 
@@ -178,10 +200,27 @@ class _RealTimeScreenState extends State<RealTimeScreen> {
     );
   }
 
+  void _showWarning(String user) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('WARNING!'),
+            content: Text('User $user is out of range'),
+          );
+        });
+  }
+
 //  Future<Position> _getCurrentLocation() async {
 //    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 //    Position position = await geolocator.getCurrentPosition(
 //        desiredAccuracy: LocationAccuracy.best);
 //    return position;
 //  }
+}
+
+class User {
+  String name;
+
+  User(this.name);
 }
