@@ -1,4 +1,6 @@
+import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,27 +14,55 @@ class RealTimeScreen extends StatefulWidget {
 }
 
 class _RealTimeScreenState extends State<RealTimeScreen> {
-  FirebaseUser user;
-  Geolocator _geolocator;
-  LocationOptions locationOptions;
-  DatabaseReference _myUserLocation;
+//  FirebaseUser user;
+//  Geolocator _geolocator;
+//  LocationOptions locationOptions;
+//  DatabaseReference _myUserLocation;
 
-  void checkPermission() {
-    _geolocator.checkGeolocationPermissionStatus().then((status) { print('status: $status'); });
-    _geolocator.checkGeolocationPermissionStatus(locationPermission: GeolocationPermission.locationAlways).then((status) { print('always status: $status'); });
-    _geolocator.checkGeolocationPermissionStatus(locationPermission: GeolocationPermission.locationWhenInUse)..then((status) { print('whenInUse status: $status'); });
-  }
+//  void checkPermission() {
+//    _geolocator.checkGeolocationPermissionStatus().then((status) { print('status: $status'); });
+//    _geolocator.checkGeolocationPermissionStatus(locationPermission: GeolocationPermission.locationAlways).then((status) { print('always status: $status'); });
+//    _geolocator.checkGeolocationPermissionStatus(locationPermission: GeolocationPermission.locationWhenInUse)..then((status) { print('whenInUse status: $status'); });
+//  }
+
+//  @override
+//  void initState() {
+//    _geolocator = Geolocator();
+//    locationOptions = LocationOptions(accuracy: LocationAccuracy.best , );
+//    SharedPreferences.getInstance().then((sharedPref){
+//      String uid = sharedPref.getString('uid');
+//      _myUserLocation = FirebaseDatabase.instance.reference().child(uid).child('location');
+//    });
+//    checkPermission();
+//    super.initState();
+//  }
+
+  List<Marker> markers = [];
+  CameraPosition cameraPosition;
+  bool loaded = false;
 
   @override
   void initState() {
-    _geolocator = Geolocator();
-    locationOptions = LocationOptions(accuracy: LocationAccuracy.best , );
-    SharedPreferences.getInstance().then((sharedPref){
-      String uid = sharedPref.getString('uid');
-      _myUserLocation = FirebaseDatabase.instance.reference().child(uid).child('location');
-    });
-    checkPermission();
     super.initState();
+
+    FirebaseDatabase.instance
+        .reference()
+        .child('users')
+        .onValue
+        .listen((event) {
+      for (var user in event.snapshot.value) {
+        if (user != null) {
+          markers.add(Marker(
+              markerId: MarkerId(user['id']),
+              position: LatLng(user['location']['latitude'],
+                  user['location']['longitude'])));
+        }
+      }
+      cameraPosition = CameraPosition(target: markers[0].position, zoom: 15);
+      setState(() {
+        loaded = true;
+      });
+    });
   }
 
 //  @override
@@ -81,60 +111,77 @@ class _RealTimeScreenState extends State<RealTimeScreen> {
 //    );
 //  }
 
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        title: Text('Location Monitoring'),
+//      ),
+//      body: StreamBuilder(
+//        stream: _geolocator.getPositionStream(locationOptions),
+//        builder: (context, snapshot) {
+//          switch (snapshot.connectionState) {
+//            case ConnectionState.none:
+//              return Text('Error');
+//              break;
+//            case ConnectionState.waiting:
+//              return Text('Loading ......');
+//              break;
+//            case ConnectionState.done:
+//            case ConnectionState.active:
+//              if (snapshot.hasData) {
+//                print(snapshot.data);
+//                CameraPosition cameraPosition = CameraPosition(
+//                    target:
+//                        LatLng(snapshot.data.latitude, snapshot.data.longitude),
+//                    zoom: 15);
+//                List<Marker> markers = [];
+//                Marker marker = Marker(
+//                  markerId: MarkerId('myposition'),
+//                  position:
+//                      LatLng(snapshot.data.latitude, snapshot.data.longitude),
+//                );
+//                markers.add(marker);
+//                _myUserLocation.set({
+//                  'latitude' : snapshot.data.latitude,
+//                  'longitude' : snapshot.data.longitude,
+//                });
+//                return GoogleMap(
+//                  initialCameraPosition: cameraPosition,
+//                  markers: markers.toSet(),
+//                );
+//              } else {
+//                return Text('No location Found');
+//              }
+//              break;
+//          }
+//          return Container();
+//        },
+//      ),
+//    );
+//  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Location Monitoring'),
+        title: Text('Monitoring All Locations'),
       ),
-      body: StreamBuilder(
-        stream: _geolocator.getPositionStream(locationOptions),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              return Text('Error');
-              break;
-            case ConnectionState.waiting:
-              return Text('Loading ......');
-              break;
-            case ConnectionState.done:
-            case ConnectionState.active:
-              if (snapshot.hasData) {
-                print(snapshot.data);
-                CameraPosition cameraPosition = CameraPosition(
-                    target:
-                        LatLng(snapshot.data.latitude, snapshot.data.longitude),
-                    zoom: 15);
-                List<Marker> markers = [];
-                Marker marker = Marker(
-                  markerId: MarkerId('myposition'),
-                  position:
-                      LatLng(snapshot.data.latitude, snapshot.data.longitude),
-                );
-                markers.add(marker);
-                _myUserLocation.set({
-                  'latitude' : snapshot.data.latitude,
-                  'longitude' : snapshot.data.longitude,
-                });
-                return GoogleMap(
-                  initialCameraPosition: cameraPosition,
-                  markers: markers.toSet(),
-                );
-              } else {
-                return Text('No location Found');
-              }
-              break;
-          }
-          return Container();
-        },
-      ),
+      body: (loaded)
+          ? GoogleMap(
+              initialCameraPosition: cameraPosition,
+              markers: markers.toSet(),
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 
-  Future<Position> _getCurrentLocation() async {
-    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-    Position position = await geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
-    return position;
-  }
+//  Future<Position> _getCurrentLocation() async {
+//    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+//    Position position = await geolocator.getCurrentPosition(
+//        desiredAccuracy: LocationAccuracy.best);
+//    return position;
+//  }
 }
